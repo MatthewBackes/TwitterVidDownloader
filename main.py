@@ -20,7 +20,7 @@ api = tweepy.API(auth)
 # header.pack()
 # entry.pack()
 
-class SampleApp(tk.Tk):
+class GUI(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self.ID = 0
@@ -38,12 +38,12 @@ class SampleApp(tk.Tk):
 
     def on_button(self):
         self.ID = self.entry.get()
+        self.destroy()
     
     def retID(self):
-        print(self.ID)
         return self.ID
 
-app = SampleApp()
+app = GUI()
 app.mainloop()
 vidToGet = app.retID()
 tweet = api.get_status(vidToGet, tweet_mode="extended")
