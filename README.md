@@ -3,4 +3,4 @@
 Work in progress.
 
 
-Currently gives direct link to video with highest bitrate.
+GUI update to enter Twitter ID and get highest bitrate version of linked video.
