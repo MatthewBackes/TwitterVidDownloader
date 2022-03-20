@@ -8,18 +8,6 @@ auth.set_access_token(config.access_token, config.access_token_secret)
 
 api = tweepy.API(auth)
 
-# window = tk.Tk()
-# header = tk.Label(
-#     text="Enter Tweet ID:",
-#     fg="white",
-#     bg = "black",
-#     width=50,
-#     height=50)
-# entry = tk.Entry()
-# vidToGet = entry.get()
-# header.pack()
-# entry.pack()
-
 class GUI(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
