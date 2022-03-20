@@ -1,5 +1,6 @@
 import tweepy
 import config
+import urllib.request
 
 auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
 auth.set_access_token(config.access_token, config.access_token_secret)
@@ -25,4 +26,5 @@ if vidCheck == "video":
 else:
     print("Tweet does not contain a video.")
 
-print(url)
+fn = input("Save filename as: ") + '.mp4'
+urllib.request.urlretrieve(url, fn) 
