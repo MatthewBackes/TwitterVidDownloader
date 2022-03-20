@@ -12,8 +12,11 @@ tweet = api.get_status(vidToGet, tweet_mode="extended")
 vidCheck = ''
 bitrate = 0
 url = ''
-for tweetType in tweet.extended_entities['media']:
-    vidCheck = tweetType['type']
+try:
+    for tweetType in tweet.extended_entities['media']:
+        vidCheck = tweetType['type']
+except:
+    pass
 if vidCheck == "video":
     for vid in tweet.extended_entities['media']:
         vidin = vid.get('video_info')
@@ -22,9 +25,8 @@ if vidCheck == "video":
                 if i.get('bitrate') > bitrate:
                     bitrate = i.get('bitrate')
                     url = i.get('url')
+    fn = input("Save filename as: ") + '.mp4'
+    urllib.request.urlretrieve(url, fn) 
 
 else:
     print("Tweet does not contain a video.")
-
-fn = input("Save filename as: ") + '.mp4'
-urllib.request.urlretrieve(url, fn) 
