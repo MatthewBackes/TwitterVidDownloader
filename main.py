@@ -26,8 +26,7 @@ if vidCheck == "video":
                     bitrate = i.get('bitrate')
                     url = i.get('url')
     fn = input("Save filename as: ") + '.mp4'
-    urllib.request.urlretrieve(url, fn)
-    print("test")
+    urllib.request.urlretrieve(url, fn) 
 
 else:
     print("Tweet does not contain a video.")
