@@ -1,13 +1,51 @@
 import tweepy
 import config
 import urllib.request
+import tkinter as tk
 
 auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
 auth.set_access_token(config.access_token, config.access_token_secret)
 
 api = tweepy.API(auth)
 
-vidToGet = input("Enter tweet ID:")
+# window = tk.Tk()
+# header = tk.Label(
+#     text="Enter Tweet ID:",
+#     fg="white",
+#     bg = "black",
+#     width=50,
+#     height=50)
+# entry = tk.Entry()
+# vidToGet = entry.get()
+# header.pack()
+# entry.pack()
+
+class SampleApp(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self.ID = 0
+        self.header = tk.Label(
+        text="Enter Tweet ID:",
+        fg="white",
+        bg = "black",
+        width=20,
+        height=10)
+        self.entry = tk.Entry(self)
+        self.button = tk.Button(self, text="Enter", command=self.on_button)
+        self.header.pack()
+        self.entry.pack()
+        self.button.pack()
+
+    def on_button(self):
+        self.ID = self.entry.get()
+    
+    def retID(self):
+        print(self.ID)
+        return self.ID
+
+app = SampleApp()
+app.mainloop()
+vidToGet = app.retID()
 tweet = api.get_status(vidToGet, tweet_mode="extended")
 vidCheck = ''
 bitrate = 0
