@@ -12,12 +12,13 @@ class GUI(tk.Tk):
     def __init__(self, t):
         tk.Tk.__init__(self)
         self.ID = 0
+        self.title("Twitter Video Downloader")
         self.header = tk.Label(
         text= t,
         fg="white",
         bg = "black",
-        width=30,
-        height=10)
+        width=60,
+        height=20)
         self.entry = tk.Entry(self)
         self.button = tk.Button(self, text="Enter", command=self.on_button)
         self.header.pack()
@@ -37,13 +38,16 @@ vidToGet = app.retID()
 try:
     tweet = api.get_status(vidToGet, tweet_mode="extended")
 except:
+    failhead = tk.Tk()
+    failhead.title("Twitter Video Downloader")
     fail = tk.Label(
         text="Invalid Tweet ID.",
         fg="white",
         bg = "black",
-        width=30,
-        height=10)
+        width=60,
+        height=20)
     fail.pack()
+    failhead.mainloop()
     fail.mainloop()
     quit()
 vidCheck = ''
@@ -68,11 +72,14 @@ if vidCheck == "video":
     urllib.request.urlretrieve(url, name) 
 
 else:
+    failhead = tk.Tk()
+    failhead.title("Twitter Video Downloader")
     fail = tk.Label(
         text="Tweet does not have a video.",
         fg="white",
         bg = "black",
-        width=30,
-        height=10)
+        width=60,
+        height=20)
     fail.pack()
+    failhead.mainloop()
     fail.mainloop()
