@@ -1,6 +1,7 @@
 import tweepy
 import config
 import urllib.request
+from urllib.parse import urlparse
 import tkinter as tk
 from tkinter.filedialog import asksaveasfilename
 
@@ -42,16 +43,16 @@ class GUI(tk.Tk):
     def retID(self):
         return self.ID
 
-app = GUI("Enter Tweet ID:")
+app = GUI("Enter Tweet Link:")
 app.mainloop()
-vidToGet = app.retID()
+vidToGet = urlparse(app.retID()).path.split('/')[-1]
 try:
     tweet = api.get_status(vidToGet, tweet_mode="extended")
 except:
     failhead = tk.Tk()
     failhead.title("Twitter Video Downloader")
     fail = tk.Label( failhead,
-        text="Invalid Tweet ID.",
+        text="Invalid link.",
         fg="white",
         bg = "black",
         width=60,
