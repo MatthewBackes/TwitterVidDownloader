@@ -2,11 +2,21 @@ import tweepy
 import config
 import urllib.request
 import tkinter as tk
+from tkinter.filedialog import asksaveasfilename
 
 auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
 auth.set_access_token(config.access_token, config.access_token_secret)
 
 api = tweepy.API(auth)
+
+def save_as(vid):
+    filepath = asksaveasfilename(
+        defaultextension=".mp4",
+        filetypes=[("Media Files", "*.mp4*")]
+    )
+    if not filepath:
+        return
+    urllib.request.urlretrieve(vid, filepath)
 
 class GUI(tk.Tk):
     def __init__(self, t):
@@ -40,7 +50,7 @@ try:
 except:
     failhead = tk.Tk()
     failhead.title("Twitter Video Downloader")
-    fail = tk.Label(
+    fail = tk.Label( failhead,
         text="Invalid Tweet ID.",
         fg="white",
         bg = "black",
@@ -48,7 +58,6 @@ except:
         height=20)
     fail.pack()
     failhead.mainloop()
-    fail.mainloop()
     quit()
 vidCheck = ''
 bitrate = 0
@@ -66,15 +75,23 @@ if vidCheck == "video":
                 if i.get('bitrate') > bitrate:
                     bitrate = i.get('bitrate')
                     url = i.get('url')
-    fn = GUI("Save filename as: ")
-    fn.mainloop()
-    name = fn.retID() + '.mp4'
-    urllib.request.urlretrieve(url, name) 
+    suchead = tk.Tk()
+    suchead.title("Twitter Video Downloader")
+    success = tk.Label( suchead,
+        text="Select filepath.",
+        fg="white",
+        bg = "black",
+        width=60,
+        height=20)
+    savebut = tk.Button(suchead, text = "Save as", command =lambda: save_as(url))
+    success.pack()
+    savebut.pack()
+    suchead.mainloop()
 
 else:
     failhead = tk.Tk()
     failhead.title("Twitter Video Downloader")
-    fail = tk.Label(
+    fail = tk.Label( failhead,
         text="Tweet does not have a video.",
         fg="white",
         bg = "black",
@@ -82,4 +99,3 @@ else:
         height=20)
     fail.pack()
     failhead.mainloop()
-    fail.mainloop()
