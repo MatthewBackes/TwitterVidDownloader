@@ -9,14 +9,14 @@ auth.set_access_token(config.access_token, config.access_token_secret)
 api = tweepy.API(auth)
 
 class GUI(tk.Tk):
-    def __init__(self):
+    def __init__(self, t):
         tk.Tk.__init__(self)
         self.ID = 0
         self.header = tk.Label(
-        text="Enter Tweet ID:",
+        text= t,
         fg="white",
         bg = "black",
-        width=20,
+        width=30,
         height=10)
         self.entry = tk.Entry(self)
         self.button = tk.Button(self, text="Enter", command=self.on_button)
@@ -31,10 +31,21 @@ class GUI(tk.Tk):
     def retID(self):
         return self.ID
 
-app = GUI()
+app = GUI("Enter Tweet ID:")
 app.mainloop()
 vidToGet = app.retID()
-tweet = api.get_status(vidToGet, tweet_mode="extended")
+try:
+    tweet = api.get_status(vidToGet, tweet_mode="extended")
+except:
+    fail = tk.Label(
+        text="Invalid Tweet ID.",
+        fg="white",
+        bg = "black",
+        width=30,
+        height=10)
+    fail.pack()
+    fail.mainloop()
+    quit()
 vidCheck = ''
 bitrate = 0
 url = ''
@@ -51,8 +62,17 @@ if vidCheck == "video":
                 if i.get('bitrate') > bitrate:
                     bitrate = i.get('bitrate')
                     url = i.get('url')
-    fn = input("Save filename as: ") + '.mp4'
-    urllib.request.urlretrieve(url, fn) 
+    fn = GUI("Save filename as: ")
+    fn.mainloop()
+    name = fn.retID() + '.mp4'
+    urllib.request.urlretrieve(url, name) 
 
 else:
-    print("Tweet does not contain a video.")
+    fail = tk.Label(
+        text="Tweet does not have a video.",
+        fg="white",
+        bg = "black",
+        width=30,
+        height=10)
+    fail.pack()
+    fail.mainloop()
