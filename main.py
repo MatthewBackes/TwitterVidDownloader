@@ -12,7 +12,7 @@ auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
 auth.set_access_token(config.access_token, config.access_token_secret)
 
 api = tweepy.API(auth)
-
+url = ""
 #Function that saves the video. Allows for filepath selection.
 #'asksaveasfilename' opens directory. urllib actually does the saving.
 def save_as(vid):
@@ -27,88 +27,121 @@ def save_as(vid):
 #GUI class acts as the screen that first appears when running the program.
 #Intending to add all screens to this class to simplify code.
 class GUI(tk.Tk):
-    def __init__(self, t):
+    def __init__(self):
         tk.Tk.__init__(self)
+        container = tk.Frame(self)
+
+        container.pack(side="top", fill="both", expand = True)
+
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.frames = {}
+
+        for x in (Start, Fail1, Fail2, Success, Done):
+            frame = x(container, self)
+            self.frames[x] = frame
+            frame.grid(row = 0, column = 0, sticky="nsew")
+        self.show_frame(Start)
+    
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
+
+class Start(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
         self.ID = 0
-        self.title("Twitter Video Downloader")
-        self.header = tk.Label(
-        text= t,
-        fg="white",
-        bg = "black",
-        width=60,
-        height=20)
-        self.entry = tk.Entry(self)
-        self.button = tk.Button(self, text="Enter", command=self.on_button)
+        self.header = tk.Label(self,
+            text= "Please enter tweet Link:",
+            fg="white",
+            bg = "black",
+            width=60,
+            height=20)
         self.header.pack()
+        self.entry = tk.Entry(self)
         self.entry.pack()
+        self.button = tk.Button(self, text="Enter", command=lambda: self.check_link(controller))
         self.button.pack()
 
-    def on_button(self):
+    def check_link(self, controller):
         self.ID = self.entry.get()
-        self.destroy()
-    
-    def retID(self):
-        return self.ID
+        self.vidToGet = urlparse(self.entry.get()).path.split('/')[-1]
+        #Try and except block to catch a fail if user provides something other than a tweet.
+        try:
+            self.tweet = api.get_status(self.vidToGet, tweet_mode="extended")
+        except:
+            controller.show_frame(Fail1)
+        self.vidCheck = ''
+        self.bitrate = 0
+        global url
+        #Another try and except block. Except catches tweets that have no media.
+        try:
+            for tweetType in self.tweet.extended_entities['media']:
+                self.vidCheck = tweetType['type']
+        except:
+            controller.show_frame(Fail2)
+        #If check to make sure the tweet media is actually a video and not a picture, gif, etc.
+        if self.vidCheck == "video":
+            for vid in self.tweet.extended_entities['media']:
+                vidin = vid.get('video_info')
+                for i in vidin.get('variants'):
+                    if i.get('content_type') == 'video/mp4':
+                        if i.get('bitrate') > self.bitrate:
+                            self.bitrate = i.get('bitrate')
+                            url = i.get('url')
+        controller.show_frame(Success)
 
-app = GUI("Enter Tweet Link:")
+class Fail1(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        fail = tk.Label( self,
+            text="Link is not a tweet.",
+            fg="white",
+            bg = "black",
+            width=60,
+            height=20)
+        fail.pack()
+        self.button = tk.Button(self, text="Retry", command=lambda: controller.show_frame(Start))
+        self.button.pack()
+
+class Fail2(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        fail = tk.Label( self,
+            text="Tweet does not have a video.",
+            fg="white",
+            bg = "black",
+            width=60,
+            height=20)
+        fail.pack()
+        self.button = tk.Button(self, text="Retry", command=lambda: controller.show_frame(Start))
+        self.button.pack()
+
+class Success(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        success = tk.Label( self,
+            text="Select filepath.",
+            fg="white",
+            bg = "black",
+            width=60,
+            height=20)
+        success.pack()
+        savebut = tk.Button(self, text = "Save as", command =lambda: [save_as(url), controller.show_frame(Done)])
+        savebut.pack()
+
+class Done(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        done = tk.Label( self,
+            text="File successfully downloaded.",
+            fg="white",
+            bg = "black",
+            width=60,
+            height=20)
+        done.pack()
+
+app = GUI()
 app.mainloop()
-vidToGet = urlparse(app.retID()).path.split('/')[-1]
-#Try and except block to catch a fail if user provides something other than a tweet.
-try:
-    tweet = api.get_status(vidToGet, tweet_mode="extended")
-except:
-    failhead = tk.Tk()
-    failhead.title("Twitter Video Downloader")
-    fail = tk.Label( failhead,
-        text="Link is not a tweet.",
-        fg="white",
-        bg = "black",
-        width=60,
-        height=20)
-    fail.pack()
-    failhead.mainloop()
-    quit()
-vidCheck = ''
-bitrate = 0
-url = ''
-#Another try and except block. Except is just a pass because the following if statement handles an invalid link.
-try:
-    for tweetType in tweet.extended_entities['media']:
-        vidCheck = tweetType['type']
-except:
-    pass
-#If check to make sure the tweet media is actually a video and not a picture, gif, etc.
-if vidCheck == "video":
-    for vid in tweet.extended_entities['media']:
-        vidin = vid.get('video_info')
-        for i in vidin.get('variants'):
-            if i.get('content_type') == 'video/mp4':
-                if i.get('bitrate') > bitrate:
-                    bitrate = i.get('bitrate')
-                    url = i.get('url')
-    suchead = tk.Tk()
-    suchead.title("Twitter Video Downloader")
-    success = tk.Label( suchead,
-        text="Select filepath.",
-        fg="white",
-        bg = "black",
-        width=60,
-        height=20)
-    #Without the lambda, a button with a command calling a function will automatically trigger if the function has an argument.
-    #Have no idea why this is, but using lambda prevents it.
-    savebut = tk.Button(suchead, text = "Save as", command =lambda: [save_as(url), suchead.destroy()])
-    success.pack()
-    savebut.pack()
-    suchead.mainloop()
 
-else:
-    failhead = tk.Tk()
-    failhead.title("Twitter Video Downloader")
-    fail = tk.Label( failhead,
-        text="Tweet does not have a video.",
-        fg="white",
-        bg = "black",
-        width=60,
-        height=20)
-    fail.pack()
-    failhead.mainloop()
