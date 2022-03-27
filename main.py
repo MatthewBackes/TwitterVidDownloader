@@ -29,6 +29,7 @@ def save_as(vid):
 class GUI(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
+        #Code for using frames gathered from https://pythonprogramming.net/change-show-new-frame-tkinter/
         container = tk.Frame(self)
 
         container.pack(side="top", fill="both", expand = True)
