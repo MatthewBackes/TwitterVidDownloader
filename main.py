@@ -24,6 +24,14 @@ def save_as(vid):
         return
     urllib.request.urlretrieve(vid, filepath)
 
+def body(s, t):
+    return tk.Label(s,
+        text = t,
+        fg="white",
+        bg = "black",
+        width=60,
+        height=20)
+
 #GUI class acts as the screen that first appears when running the program.
 #Intending to add all screens to this class to simplify code.
 class GUI(tk.Tk):
@@ -49,16 +57,13 @@ class GUI(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
+
+
 class Start(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.ID = 0
-        self.header = tk.Label(self,
-            text= "Please enter tweet Link:",
-            fg="white",
-            bg = "black",
-            width=60,
-            height=20)
+        self.header = body(self, "Enter tweet link:")
         self.header.pack()
         self.entry = tk.Entry(self)
         self.entry.pack()
@@ -87,7 +92,9 @@ class Start(tk.Frame):
                                 if i.get('bitrate') > self.bitrate:
                                     self.bitrate = i.get('bitrate')
                                     url = i.get('url')
-                controller.show_frame(Success)
+                    controller.show_frame(Success)
+                else:
+                    controller.show_frame(Fail2)
             except:
                 controller.show_frame(Fail2)
         except:
@@ -96,12 +103,7 @@ class Start(tk.Frame):
 class Fail1(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        fail = tk.Label( self,
-            text="Link is not a tweet.",
-            fg="white",
-            bg = "black",
-            width=60,
-            height=20)
+        fail = body(self, "Link is not a tweet.")
         fail.pack()
         self.button = tk.Button(self, text="Retry", command=lambda: controller.show_frame(Start))
         self.button.pack()
@@ -109,12 +111,7 @@ class Fail1(tk.Frame):
 class Fail2(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        fail = tk.Label( self,
-            text="Tweet does not have a video.",
-            fg="white",
-            bg = "black",
-            width=60,
-            height=20)
+        fail = body(self, "Tweet does not have a video.")
         fail.pack()
         self.button = tk.Button(self, text="Retry", command=lambda: controller.show_frame(Start))
         self.button.pack()
@@ -122,12 +119,7 @@ class Fail2(tk.Frame):
 class Success(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        success = tk.Label( self,
-            text="Select filepath.",
-            fg="white",
-            bg = "black",
-            width=60,
-            height=20)
+        success = body(self, "Select filepath.")
         success.pack()
         savebut = tk.Button(self, text = "Save as", command =lambda: [save_as(url), controller.show_frame(Done)])
         savebut.pack()
@@ -135,12 +127,7 @@ class Success(tk.Frame):
 class Done(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        done = tk.Label( self,
-            text="File successfully downloaded.",
-            fg="white",
-            bg = "black",
-            width=60,
-            height=20)
+        done = body(self, "File successfully downloaded.")
         done.pack()
 
 app = GUI()
