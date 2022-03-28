@@ -71,27 +71,27 @@ class Start(tk.Frame):
         #Try and except block to catch a fail if user provides something other than a tweet.
         try:
             self.tweet = api.get_status(self.vidToGet, tweet_mode="extended")
+            self.vidCheck = ''
+            self.bitrate = 0
+            global url
+            #Another try and except block. Except catches tweets that have no media.
+            try:
+                for tweetType in self.tweet.extended_entities['media']:
+                    self.vidCheck = tweetType['type']
+                #If check to make sure the tweet media is actually a video and not a picture, gif, etc.
+                if self.vidCheck == "video":
+                    for vid in self.tweet.extended_entities['media']:
+                        vidin = vid.get('video_info')
+                        for i in vidin.get('variants'):
+                            if i.get('content_type') == 'video/mp4':
+                                if i.get('bitrate') > self.bitrate:
+                                    self.bitrate = i.get('bitrate')
+                                    url = i.get('url')
+                controller.show_frame(Success)
+            except:
+                controller.show_frame(Fail2)
         except:
-            controller.show_frame(Fail1)
-        self.vidCheck = ''
-        self.bitrate = 0
-        global url
-        #Another try and except block. Except catches tweets that have no media.
-        try:
-            for tweetType in self.tweet.extended_entities['media']:
-                self.vidCheck = tweetType['type']
-        except:
-            controller.show_frame(Fail2)
-        #If check to make sure the tweet media is actually a video and not a picture, gif, etc.
-        if self.vidCheck == "video":
-            for vid in self.tweet.extended_entities['media']:
-                vidin = vid.get('video_info')
-                for i in vidin.get('variants'):
-                    if i.get('content_type') == 'video/mp4':
-                        if i.get('bitrate') > self.bitrate:
-                            self.bitrate = i.get('bitrate')
-                            url = i.get('url')
-        controller.show_frame(Success)
+            controller.show_frame(Fail1)  
 
 class Fail1(tk.Frame):
     def __init__(self, parent, controller):
